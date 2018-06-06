@@ -1,1 +1,1 @@
-# fatoracaoMatriz
+algoritmos de fatoração de matrizes

@@ -1,10 +1,10 @@
 /* Autor: Mauricio Luiz Abreu Cardoso */
 //------------------------------------------------------------------------------
-// para compilar o programa de testes, substitua a minhaLu pela sua e execute
+// para compilar e executar o programa de testes, faça:
 //
 // gcc main.c ep2_test.c -lm -o ep2
 //
-// e depois, faÃ§a
+// e depois, faça:
 //
 // ./ep2
 //
@@ -28,6 +28,8 @@ void permute_linha(double* a, double * b, int n)
   memcpy(aux, a, row_size);
   memcpy(a, b, row_size);
   memcpy(b, aux, row_size);
+
+  free(aux);
 }
 
 
