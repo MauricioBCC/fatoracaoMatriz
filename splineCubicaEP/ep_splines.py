@@ -715,37 +715,46 @@ def main (n = 30):
     n = sys.argv[3]
 
   y = [1, 2, 1, 3 ,1, 2, 3, 4, 5, 3]
-  #cria o vetor de pesos.
-  weights = np.random.rand(n)  
-  
-  #criamos spline
-  sp = spline(weights, x_min, x_max)  
-  
-  #Vetor X
-  a = [0]*n
-  x = np.array(a)
-  x[0] = x_min
-  step = (x_max - x_min) / (n - 1) 
-  for i in range(1,n-1):
-    x[i] = x[i-1] + step
-  x[n-1] = x_max
-  
-  #Matrix B
-  B = np.array(sp.beta_j(0,x))
-  for i in range(1,n):
-    B = np.column_stack((B, sp.beta_j(i,x)))
 
-  M1 = np.transpose(B) * B  
-  M2 = matrix_m2(n)
-  M = M1 + M2
+  erro = 300000
+  while erro > 6000:
+    #cria o vetor de pesos.
+    weights = np.random.rand(n)  
+    
+    #criamos spline
+    sp = spline(weights, x_min, x_max)  
+    
+    #Vetor X
+    a = [0]*n
+    x = np.array(a)
+    x[0] = x_min
+    step = (x_max - x_min) / (n - 1) 
+    for i in range(1,n-1):
+      x[i] = x[i-1] + step
+    x[n-1] = x_max
+    
+    #Matrix B
+    B = np.array(sp.beta_j(0,x))
+    for i in range(1,n):
+      B = np.column_stack((B, sp.beta_j(i,x)))
 
-  b = np.transpose(B) * y
-  
-  fw = np.transpose(weights) * M * weights -2 * np.transpose(b) * weights
+    M1 = np.transpose(B) * B  
+    M2 = matrix_m2(n)
+    M = M1 + M2
 
-  #estimativa do erro
-  print(np.linalg.norm(fw))
+    b = np.transpose(B) * y
+    
+    fw = np.transpose(weights) * M * weights -2 * np.transpose(b) * weights
 
+    #estimativa do erro
+    erro = np.linalg.norm(fw)
+
+    #novos valores devido ao weights
+    y2 = [0]*n
+    for i in range(0,n):
+      y2[i] = np.dot(weights, B[i])
+
+  print(y2)
 
 
 if __name__ == "__main__":
