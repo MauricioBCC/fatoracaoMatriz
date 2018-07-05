@@ -705,7 +705,7 @@ def main (n = 30):
     
   if len(sys.argv) == 1: 
     print('Executando com valores default x_min = 0, x_max = 1 e n = 30\n\n')
-    n = 17
+    n = 10
     x_min = 0
     x_max = 25
 
@@ -729,12 +729,15 @@ def main (n = 30):
     x[i] = x[i-1] + step
   x[n-1] = x_max
   
-  B = []
   #Matrix B
-  for i in range(0,n):
-    B.append(sp.beta_j(i,x))
+  B = np.array(sp.beta_j(0,x))
+  for i in range(1,n):
+    B = np.column_stack((B, sp.beta_j(i,x)))
 
-  print(B)
+  M1 = np.transpose(B) * B  
+  M2 = matrix_m2(n)
+  M = M1 + M2
+
 if __name__ == "__main__":
     main()
 
