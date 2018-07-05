@@ -714,6 +714,7 @@ def main (n = 30):
     x_max = sys.argv[2]
     n = sys.argv[3]
 
+  y = [1, 2, 1, 3 ,1, 2, 3, 4, 5, 3]
   #cria o vetor de pesos.
   weights = np.random.rand(n)  
   
@@ -737,6 +738,15 @@ def main (n = 30):
   M1 = np.transpose(B) * B  
   M2 = matrix_m2(n)
   M = M1 + M2
+
+  b = np.transpose(B) * y
+  
+  fw = np.transpose(weights) * M * weights -2 * np.transpose(b) * weights
+
+  #estimativa do erro
+  print(np.linalg.norm(fw))
+
+
 
 if __name__ == "__main__":
     main()
