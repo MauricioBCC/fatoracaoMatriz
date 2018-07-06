@@ -703,58 +703,53 @@ def matrix_m2(n):
   ### MAIN
 def main (n = 30):
     
-  if len(sys.argv) == 1: 
-    print('Executando com valores default x_min = 0, x_max = 1 e n = 30\n\n')
-    n = 10
-    x_min = 0
-    x_max = 25
+  if len(sys.argv) != 1: 
+    print('O programa não recebe argumentos\n')
+    return 0
+  
+  n = 10
+  x_min = 0
+  x_max = 25
 
-  else:
-    x_min = sys.argv[1]
-    x_max = sys.argv[2]
-    n = sys.argv[3]
+  lambd = 100
+  #cria o vetor de pesos.
+  weights = np.random.rand(n)  
+  
+  #criamos spline
+  sp = spline(weights, x_min, x_max)  
+  
+  #Vetor X
+  a = [0]*n
+  x = np.array(a)
+  x[0] = x_min
+  step = (x_max - x_min) / (n - 1) 
+  for i in range(1,n-1):
+    x[i] = x[i-1] + step
+  x[n-1] = x_max
 
-  y = [1, 2, 1, 3 ,1, 2, 3, 4, 5, 3]
+  #Vetor Y
+  y = np.random.rand(n)  
+  
+  #Matrix B
+  B = np.array(sp.beta_j(0,x))
+  for i in range(1,n):
+    B = np.column_stack((B, sp.beta_j(i,x)))
+  B = np.transpose(B)
 
-  erro = 300000
-  while erro > 6000:
-    #cria o vetor de pesos.
-    weights = np.random.rand(n)  
+  M1 = np.matmul(np.transpose(B), B)
+  M2 = matrix_m2(n)
+  M = M1 + lambd * M2
+
+  b = np.matmul(np.transpose(B), y)
+  
     
-    #criamos spline
-    sp = spline(weights, x_min, x_max)  
-    
-    #Vetor X
-    a = [0]*n
-    x = np.array(a)
-    x[0] = x_min
-    step = (x_max - x_min) / (n - 1) 
-    for i in range(1,n-1):
-      x[i] = x[i-1] + step
-    x[n-1] = x_max
-    
-    #Matrix B
-    B = np.array(sp.beta_j(0,x))
-    for i in range(1,n):
-      B = np.column_stack((B, sp.beta_j(i,x)))
 
-    M1 = np.transpose(B) * B  
-    M2 = matrix_m2(n)
-    M = M1 + M2
+  #encontra o peso
+  a = np.linalg.solve(M1+np.dot(lambd,M2), b)
 
-    b = np.transpose(B) * y
-    
-    fw = np.transpose(weights) * M * weights -2 * np.transpose(b) * weights
 
-    #estimativa do erro
-    erro = np.linalg.norm(fw)
 
-    #novos valores devido ao weights
-    y2 = [0]*n
-    for i in range(0,n):
-      y2[i] = np.dot(weights, B[i])
 
-  print(y2)
 
 
 if __name__ == "__main__":
