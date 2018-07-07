@@ -763,6 +763,8 @@ def main (n = 30):
   plt.plot(x, spAproximada(x))
   plt.show()
 
+  return a
+
 
 if __name__ == "__main__":
     main()
