@@ -5,6 +5,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import functools
 import sys
+import random
 ###############################################################################
 #
 # spline = a cubic b spline with equally spaced nodes
@@ -707,29 +708,34 @@ def main (n = 30):
     print('O programa não recebe argumentos\n')
     return 0
   
-  n = 10
+  n = 500
   x_min = 0
-  x_max = 25
+  x_max = 10
+  weight_tam = 13
 
   lambd = 100
   #cria o vetor de pesos.
-  weights = np.random.rand(n)  
+  weights = np.random.rand(weight_tam)  
   
   #criamos spline
   sp = spline(weights, x_min, x_max)  
   
   #Vetor X
   a = [0]*n
-  x = np.array(a)
+  x = np.array(a, dtype=float)
   x[0] = x_min
   step = (x_max - x_min) / (n - 1) 
   for i in range(1,n-1):
-    x[i] = x[i-1] + step
+    x[i] += x[i-1] + step
   x[n-1] = x_max
 
   #Vetor Y
-  y = np.random.rand(n)  
+  y = sp(x)  
   
+  yComRuido = []
+  for i in range(0,n):
+    yComRuido.append(y[i] + random.uniform(-10, 10))
+
   #Matrix B
   B = np.array(sp.beta_j(0,x))
   for i in range(1,n):
@@ -737,15 +743,23 @@ def main (n = 30):
   B = np.transpose(B)
 
   M1 = np.matmul(np.transpose(B), B)
-  M2 = matrix_m2(n)
+  M2 = matrix_m2(weight_tam)
   M = M1 + lambd * M2
 
-  b = np.matmul(np.transpose(B), y)
-  
-    
+  b = np.matmul(np.transpose(B), yComRuido)
 
-  #encontra o peso
+  #encontra o peso para aproximar spline
   a = np.linalg.solve(M1+np.dot(lambd,M2), b)
+
+  #spline feita a partir da spline com ruidos
+  spAproximada = spline(a, x_min, x_max)
+
+  #plt.plot(x, y)
+  plt.plot(x, yComRuido)
+  plt.plot(x, spAproximada(x))
+  plt.show()
+
+ 
 
 
 
